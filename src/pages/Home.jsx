@@ -9,6 +9,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [inputText, setInputText] = useState("");
 
   async function fetchRecipes(skipCount, query) {
     setLoading(true);
@@ -36,14 +37,21 @@ function Home() {
   function handleSearch(e) {
     e.preventDefault();
 
-    const form = new FormData(e.target);
-    let query = form.get("query").trim();
+    // const form = new FormData(e.target);
+    // let query = form.get("query").trim();
+    let query = inputText.trim();
     setSearchQuery(query);
 
     // if (query) {
-      fetchRecipes(0, query);
+    fetchRecipes(0, query);
     // }
 
+  }
+
+  function handleBack() {
+    setInputText("");
+    setSearchQuery("");
+    fetchRecipes(0, "");
   }
 
   // if (loading) {
@@ -62,41 +70,66 @@ function Home() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <form onSubmit={handleSearch} className="flex gap-2 max-w-md mx-auto mb-8">
+
+
         <input
           name='query'
           type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
           placeholder="Search recipes..."
           className="flex-1 border border-border rounded px-3 py-2 bg-card text-text outline-none focus:border-accent"
         />
         <button type="submit" className="bg-accent hover:bg-accent-hover text-white rounded px-4 py-2 font-medium">
           Search
         </button>
+        {/* {searchQuery && (
+          <button type = "button" onClick={handleBack} className='border border-border bg-card hover:bg-gray-100 text-text rounded px-4 py-2 font-medium'> ← Back</button>
+        )} */}
       </form>
 
+
       {loading && <p className='text-center py-6 text-muted'>Loading...</p>}
-      {!loading && recipes.length === 0 && <p className='text-center py-6 text-muted'>{`No recipes found for "${searchQuery}"`} </p>};
+      {!loading && recipes.length === 0 && <p className='text-center py-6 text-muted'>{`No recipes found for "${searchQuery}"`} </p>}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))}
+
+      {searchQuery && !loading && (
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-text text-lg">
+            Showing results for <span className="font-semibold">"{searchQuery}"</span>
+          </p>
+          <button
+            type="button"
+            onClick={handleBack}
+            className="text-accent hover:underline font-medium flex items-center gap-1"
+          >
+            ← Back to all recipes
+          </button>
         </div>
+      )}
 
-        {
-          recipes.length < total &&
-          <div className="text-center mt-8">
-            <button
-              type="button"
-              onClick={() => fetchRecipes(recipes.length, searchQuery)}
-              className="bg-accent hover:bg-accent-hover text-white rounded px-6 py-2 font-medium"
-            >
-              Load More
-            </button>
-          </div>
-        }
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {recipes.map((recipe) => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
+        ))}
+      </div>
 
-      </main >
+      {
+        recipes.length < total &&
+        <div className="text-center mt-8">
+          <button
+            type="button"
+            onClick={() => fetchRecipes(recipes.length, searchQuery)}
+            className="bg-accent hover:bg-accent-hover text-white rounded px-6 py-2 font-medium"
+          >
+            Load More
+          </button>
+        </div>
+      }
+
+    </main >
   );
 }
 
-      export default Home;
+export default Home;
