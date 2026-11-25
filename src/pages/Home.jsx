@@ -2,21 +2,24 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import RecipeCard from '../components/RecipeCard';
 import useLoading from '../hooks/useLoading';
+import useError from '../hooks/useError';
 
 
 function Home() {
   const [recipes, setRecipes] = useState([]);
   const [total, setTotal] = useState(0);
   // const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState("");
+  // const [errorMsg, setErrorMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [inputText, setInputText] = useState("");
 
   const { loading, startLoading, stopLoading } = useLoading();
+  const { errorMsg, showError, removeError } = useError();
 
   async function fetchRecipes(skipCount, query) {
     // setLoading(true);
-    startLoading()
+    startLoading();
+    removeError();
     try {
       let url = `https://dummyjson.com/recipes?limit=6&skip=${skipCount}`;
       if (query) {
@@ -28,7 +31,8 @@ function Home() {
         skipCount === 0 ? data.recipes : [...prev, ...data.recipes]);
       setTotal(data.total);
     } catch (error) {
-      setErrorMsg("Please try again later.")
+      // setErrorMsg("Please try again later.")
+      showError("Please try again later.")
     }
     // setLoading(false);
     stopLoading()

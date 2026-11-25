@@ -3,27 +3,31 @@ import {Link} from 'react-router';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import useLoading from '../hooks/useLoading';
+import useError from '../hooks/useError';
 
 function RecipeDetail() {
   const {id} = useParams();
   const [recipe, setRecipe] = useState({});
   // const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState("");
+  // const [errorMsg, setErrorMsg] = useState("");
 
   const { loading, startLoading, stopLoading } = useLoading();
+  const { errorMsg, showError, removeError } = useError();
 
   async function fetchRecipe(params){
-    startLoading()
+    startLoading();
+    removeError();
     try {
       const {data} = await axios.get(`https://dummyjson.com/recipes/${id}`);
       console.log(data);
       setRecipe(data);
 
     } catch (error) {
-      setErrorMsg("Could not load recipe details. Please try again.")
+      // setErrorMsg("Could not load recipe details. Please try again.")
+      showError("Could not load recipe details. Please try again.")
     }
     // setLoading(false);
-    stopLoading()
+    stopLoading();
   }
 
   useEffect(() => {
@@ -43,7 +47,7 @@ function RecipeDetail() {
           <polyline points="12 19 5 12 12 5" />
         </svg>
           Back to Home</Link>
-          <p className='text-accent'>{errorMsg || "Recipe nto found"}</p>
+          <p className='text-accent'>{errorMsg || "Recipe not found"}</p>
 
       </main>
     );
